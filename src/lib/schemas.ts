@@ -1,40 +1,43 @@
 import { z } from 'zod';
 
 /**
- * 专辑数据 Schema
+ * 专辑数据 Schema - 基础字段
  */
-export const AlbumDataSchema = z.object({
+export const AlbumDataBaseSchema = z.object({
   title: z.string(),
   description: z.string(),
-  picture_hori: z.string().url(),
-  item_total_number: z.number().int().positive(),
-  item_now_number: z.number().int().nonnegative(),
+  picture_hori: z.string(),
+  item_total_number: z.number().int(),
+  item_now_number: z.number().int(),
   category_tag: z.string().optional(),
-  charge_pattern: z.number().int().nonnegative(),
-});
-
-export const AlbumSchema = z.object({
-  node_object_id: z.string(),
-  node_object_data: AlbumDataSchema,
+  charge_pattern: z.number().int(),
 });
 
 /**
- * 视频专辑 Episodes Schema
+ * 视频专辑 Episodes Schema - 匹配实际 JSON 结构
  */
 export const VideoEpisodeSchema = z.object({
-  ep: z.number().int().positive(),
+  id: z.number().int(),
   title: z.string(),
-  res_identifier: z.string().url(),
-  fhd: z.string().url().optional(),
-  hd: z.string().url().optional(),
-  sd: z.string().url().optional(),
-  ld: z.string().url().optional(),
+  picture_hori: z.string().optional(),
+  res_identifier: z.string(),
+  fhd: z.string().optional(),
+  hd: z.string().optional(),
+  sd: z.string().optional(),
+  ld: z.string().optional(),
 });
 
-export const VideoAlbumSchema = AlbumSchema.extend({
-  node_object_data: AlbumDataSchema.extend({
-    episodes: z.array(VideoEpisodeSchema).optional(),
-  }),
+/**
+ * 视频专辑完整 Schema
+ */
+export const VideoAlbumSchema = z.object({
+  node_object_id: z.string(),
+  node_object_data: AlbumDataBaseSchema.extend({
+    obj_class: z.string().optional(),
+    id: z.number().int().optional(),
+    picture_vert: z.string().optional(),
+    extend_extra: z.any().optional(),
+  }).passthrough(),
   node_relation_children: z.array(VideoEpisodeSchema).optional(),
 });
 
@@ -42,15 +45,22 @@ export const VideoAlbumSchema = AlbumSchema.extend({
  * 音频专辑 Episodes Schema
  */
 export const AudioEpisodeSchema = z.object({
-  ep: z.number().int().positive(),
+  id: z.number().int(),
   title: z.string(),
-  res_identifier: z.string().url(),
+  res_identifier: z.string(),
 });
 
-export const AudioAlbumSchema = AlbumSchema.extend({
-  node_object_data: AlbumDataSchema.extend({
-    episodes: z.array(AudioEpisodeSchema).optional(),
-  }),
+/**
+ * 音频专辑完整 Schema
+ */
+export const AudioAlbumSchema = z.object({
+  node_object_id: z.string(),
+  node_object_data: AlbumDataBaseSchema.extend({
+    obj_class: z.string().optional(),
+    id: z.number().int().optional(),
+    picture_vert: z.string().optional(),
+    extend_extra: z.any().optional(),
+  }).passthrough(),
   node_relation_children: z.array(AudioEpisodeSchema).optional(),
 });
 
@@ -81,8 +91,7 @@ export const SearchParamsSchema = z.object({
 export const TabTypeSchema = z.enum(['video', 'audio']);
 
 // 导出类型
-export type AlbumData = z.infer<typeof AlbumDataSchema>;
-export type Album = z.infer<typeof AlbumSchema>;
+export type AlbumData = z.infer<typeof AlbumDataBaseSchema>;
 export type VideoEpisode = z.infer<typeof VideoEpisodeSchema>;
 export type AudioEpisode = z.infer<typeof AudioEpisodeSchema>;
 export type VideoAlbum = z.infer<typeof VideoAlbumSchema>;

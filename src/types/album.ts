@@ -2,13 +2,15 @@
 // 使用 Zod Schema 生成类型以确保运行时验证
 export * from '@/lib/schemas';
 
-// 兼容旧类型的别名（用于平滑迁移）
+// 兼容旧类型的别名
 export type { 
   VideoEpisode as Episode,
   AlbumData,
   VideoAlbum,
   AudioAlbum,
-  TabType
+  TabType,
+  VideoEpisode,
+  AudioEpisode
 } from '@/lib/schemas';
 
 
