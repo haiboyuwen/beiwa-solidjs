@@ -14,12 +14,20 @@ export function createAlbumFilter(
 ) {
   const filteredAlbums = createMemo(() => {
     const albumsData = albums();
-    if (!albumsData) return [];
+    if (!albumsData || !Array.isArray(albumsData)) return [];
     
     return albumsData.filter(album => {
-      const title = album.node_object_data.title || "";
-      const desc = album.node_object_data.description || "";
-      const tags = (album.node_object_data.category_tag || "")
+      // 确保专辑数据有效且完整
+      if (!album || !album.node_object_data) return false;
+      
+      const data = album.node_object_data;
+      if (!data.title || data.item_total_number === undefined || data.item_total_number === null) {
+        return false;
+      }
+      
+      const title = data.title || "";
+      const desc = data.description || "";
+      const tags = (data.category_tag || "")
         .split(",")
         .map((t) => (typeof t === 'string' ? t.trim() : ""));
       

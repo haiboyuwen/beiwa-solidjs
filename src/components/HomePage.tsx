@@ -1,6 +1,7 @@
 import { createMemo, Show, onMount, onCleanup } from "solid-js";
 import { createStore } from "solid-js/store";
 import { useNavigate } from "@solidjs/router";
+import { isServer } from "solid-js/web";
 import { TabType } from "@/types/album";
 import { createAlbumFilter, createInfiniteScroll } from "@/lib/albumsStore";
 import { extractTags } from "@/lib/api";
@@ -27,11 +28,15 @@ interface HomeState {
 
 // 保存首页状态到 sessionStorage
 function saveHomeState(state: Omit<HomeState, 'isRestoring'>) {
-  sessionStorage.setItem('homeState', JSON.stringify(state));
+  if (isServer) return;
+  try {
+    sessionStorage.setItem('homeState', JSON.stringify(state));
+  } catch {}
 }
 
-// 从 sessionStorage 加载首页状态
+// 从 sessionStorage 加载首页状态（仅客户端）
 function loadHomeState(): Partial<HomeState> | null {
+  if (isServer) return null;
   try {
     const saved = sessionStorage.getItem('homeState');
     return saved ? JSON.parse(saved) : null;
@@ -43,38 +48,50 @@ function loadHomeState(): Partial<HomeState> | null {
 export default function HomePage(props: HomePageProps) {
   const navigate = useNavigate();
   
-  // 加载保存的状态
-  const savedState = loadHomeState();
-  
-  // 使用 createStore 统一管理状态
+  // 使用 createStore 统一管理状态（初始状态必须与服务端一致）
   const [state, setState] = createStore<HomeState>({
-    scrollY: savedState?.scrollY || 0,
-    tab: savedState?.tab || "video",
-    search: savedState?.search || "",
-    videoTag: savedState?.videoTag || "",
-    audioTag: savedState?.audioTag || "",
-    videoPage: savedState?.videoPage || 1,
-    audioPage: savedState?.audioPage || 1,
-    isRestoring: !!savedState,
+    scrollY: 0,
+    tab: "video",
+    search: "",
+    videoTag: "",
+    audioTag: "",
+    videoPage: 1,
+    audioPage: 1,
+    isRestoring: false,
   });
 
-  // 恢复滚动位置
+  // 在客户端挂载后恢复状态
   onMount(() => {
-    if (savedState?.scrollY) {
-      const restoreScroll = () => {
-        const hasContent = (props.videoAlbums()?.length || 0) > 0 || (props.audioAlbums()?.length || 0) > 0;
-        if (hasContent) {
-          setTimeout(() => {
-            window.scrollTo({ top: savedState.scrollY, behavior: 'instant' });
-            setState('isRestoring', false);
-          }, 100);
-        } else {
-          requestAnimationFrame(restoreScroll);
-        }
-      };
-      restoreScroll();
-    } else {
-      setState('isRestoring', false);
+    const savedState = loadHomeState();
+    if (savedState) {
+      setState({
+        scrollY: savedState.scrollY || 0,
+        tab: savedState.tab || "video",
+        search: savedState.search || "",
+        videoTag: savedState.videoTag || "",
+        audioTag: savedState.audioTag || "",
+        videoPage: savedState.videoPage || 1,
+        audioPage: savedState.audioPage || 1,
+        isRestoring: true,
+      });
+      
+      // 恢复滚动位置
+      if (savedState.scrollY) {
+        const restoreScroll = () => {
+          const hasContent = (props.videoAlbums()?.length || 0) > 0 || (props.audioAlbums()?.length || 0) > 0;
+          if (hasContent) {
+            setTimeout(() => {
+              window.scrollTo({ top: savedState.scrollY!, behavior: 'instant' });
+              setState('isRestoring', false);
+            }, 100);
+          } else {
+            requestAnimationFrame(restoreScroll);
+          }
+        };
+        restoreScroll();
+      } else {
+        setState('isRestoring', false);
+      }
     }
   });
 
