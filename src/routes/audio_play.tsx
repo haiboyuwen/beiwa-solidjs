@@ -111,12 +111,12 @@ export default function AudioPlayPage() {
             <div class="mb-6">
               <button
                 onClick={() => navigate("/")}
-                class="group inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-purple-600/80 to-pink-600/80 hover:from-purple-500 hover:to-pink-500 text-white rounded-xl transition-all duration-300 border-none cursor-pointer backdrop-blur-md shadow-lg hover:shadow-xl hover:-translate-y-0.5 font-medium"
+                class="group inline-flex items-center justify-center w-11 h-11 bg-purple-600/20 hover:bg-purple-600/40 text-white rounded-full transition-all duration-300 cursor-pointer backdrop-blur-md border-2 border-purple-400/60 hover:border-purple-300 shadow-[0_0_15px_rgba(168,85,247,0.3)] hover:shadow-[0_0_20px_rgba(168,85,247,0.5)]"
+                title="返回"
               >
-                <svg class="w-5 h-5 transition-transform duration-300 group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                <svg class="w-5 h-5 transition-transform duration-300 group-hover:-translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" />
                 </svg>
-                <span>返回</span>
               </button>
             </div>
 

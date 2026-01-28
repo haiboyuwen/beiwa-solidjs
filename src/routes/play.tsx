@@ -70,12 +70,12 @@ export default function PlayPage() {
             <div class="mb-6">
               <button
                 onClick={() => navigate("/")}
-                class="group inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-purple-600/80 to-indigo-600/80 hover:from-purple-500 hover:to-indigo-500 text-white rounded-xl transition-all duration-300 border-none cursor-pointer backdrop-blur-md shadow-lg hover:shadow-xl hover:-translate-y-0.5 font-medium"
+                class="group inline-flex items-center justify-center w-11 h-11 bg-purple-600/20 hover:bg-purple-600/40 text-white rounded-full transition-all duration-300 cursor-pointer backdrop-blur-md border-2 border-purple-400/60 hover:border-purple-300 shadow-[0_0_15px_rgba(168,85,247,0.3)] hover:shadow-[0_0_20px_rgba(168,85,247,0.5)]"
+                title="返回"
               >
-                <svg class="w-5 h-5 transition-transform duration-300 group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                <svg class="w-5 h-5 transition-transform duration-300 group-hover:-translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" />
                 </svg>
-                <span>返回</span>
               </button>
             </div>
 
@@ -117,16 +117,22 @@ export default function PlayPage() {
                       <button
                         onClick={playPrev}
                         disabled={episodeIndex() === 0}
-                        class="px-5 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 disabled:from-gray-700 disabled:to-gray-800 disabled:text-gray-500 text-white rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl font-medium"
+                        class="group inline-flex items-center gap-2 px-5 py-2.5 bg-transparent hover:bg-purple-600/30 disabled:bg-transparent disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-full transition-all duration-300 border-2 border-purple-400/60 hover:border-purple-300 disabled:border-gray-600 shadow-[0_0_12px_rgba(168,85,247,0.2)] hover:shadow-[0_0_18px_rgba(168,85,247,0.4)]"
                       >
-                        ⏮ 上一集
+                        <svg class="w-4 h-4 transition-transform duration-200 group-hover:-translate-x-0.5" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/>
+                        </svg>
+                        <span class="font-medium">上一集</span>
                       </button>
                       <button
                         onClick={playNext}
                         disabled={episodeIndex() >= episodes().length - 1}
-                        class="px-5 py-2.5 bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 disabled:from-gray-700 disabled:to-gray-800 disabled:text-gray-500 text-white rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl font-medium"
+                        class="group inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-pink-600/80 to-purple-600/80 hover:from-pink-500 hover:to-purple-500 disabled:from-gray-700/50 disabled:to-gray-800/50 disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-full transition-all duration-300 border-2 border-pink-400/60 hover:border-pink-300 disabled:border-gray-600 shadow-[0_0_12px_rgba(236,72,153,0.3)] hover:shadow-[0_0_18px_rgba(236,72,153,0.5)]"
                       >
-                        下一集 ⏭
+                        <span class="font-medium">下一集</span>
+                        <svg class="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/>
+                        </svg>
                       </button>
                     </div>
 
