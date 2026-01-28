@@ -12,7 +12,7 @@ export function AlbumCard(props: AlbumCardProps) {
   };
 
   return (
-    <div class="w-full max-w-sm mx-auto bg-white rounded-2xl shadow-md border border-gray-200 overflow-hidden hover:shadow-2xl hover:-translate-y-1 hover:border-blue-300 transition-all duration-300 cursor-pointer group"
+    <div class="w-full bg-white rounded-2xl shadow-md border border-gray-200 overflow-hidden hover:shadow-2xl hover:-translate-y-1 hover:border-blue-300 transition-all duration-300 cursor-pointer group"
          onClick={handlePlay}>
       <div class="relative overflow-hidden bg-gradient-to-br from-gray-100 to-gray-50 aspect-[4/3]">
         <img

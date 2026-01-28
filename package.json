@@ -11,10 +11,15 @@
     "@kobalte/core": "^0.13.11",
     "@solidjs/router": "^0.15.4",
     "@solidjs/start": "^1.2.1",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "solid-js": "^1.9.11",
-    "vinxi": "^0.5.11"
+    "tailwind-merge": "^3.4.0",
+    "vinxi": "^0.5.11",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@solid-mediakit/prpc-plugin": "^2.1.1",
     "@tailwindcss/vite": "^4.1.18",
     "@types/node": "^22.19.7",
     "tailwindcss": "^4.1.18",

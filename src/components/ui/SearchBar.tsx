@@ -13,7 +13,7 @@ interface SearchBarProps {
 
 export function SearchBar(props: SearchBarProps) {
   return (
-    <div class="max-w-5xl mx-auto px-2 sm:px-0">
+    <div class="px-2 sm:px-0">
       <div class="flex flex-col gap-4 p-5 sm:p-6 bg-white/95 backdrop-blur-md rounded-2xl border border-purple-100 shadow-soft">
         {/* 搜索框 - 使用 Kobalte TextField */}
         <TextField

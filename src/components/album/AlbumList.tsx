@@ -22,7 +22,7 @@ export function AlbumList(props: AlbumListProps) {
       }
     >
       <div class="space-y-4 sm:space-y-6">
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 justify-items-center max-w-7xl mx-auto">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
           <For each={props.albums}>
             {(album) => (
               <AlbumCard

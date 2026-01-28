@@ -1,4 +1,5 @@
-import { createSignal, createMemo, Show, onMount, onCleanup, createEffect } from "solid-js";
+import { createMemo, Show, onMount, onCleanup } from "solid-js";
+import { createStore } from "solid-js/store";
 import { useNavigate } from "@solidjs/router";
 import { TabType } from "@/types/album";
 import { createAlbumFilter, createInfiniteScroll } from "@/lib/albumsStore";
@@ -12,8 +13,8 @@ interface HomePageProps {
   audioAlbums: () => any[] | undefined;
 }
 
-// 保存首页状态的工具函数
-function saveHomeState(state: {
+// 首页状态类型
+interface HomeState {
   scrollY: number;
   tab: TabType;
   search: string;
@@ -21,11 +22,16 @@ function saveHomeState(state: {
   audioTag: string;
   videoPage: number;
   audioPage: number;
-}) {
+  isRestoring: boolean;
+}
+
+// 保存首页状态到 sessionStorage
+function saveHomeState(state: Omit<HomeState, 'isRestoring'>) {
   sessionStorage.setItem('homeState', JSON.stringify(state));
 }
 
-function loadHomeState() {
+// 从 sessionStorage 加载首页状态
+function loadHomeState(): Partial<HomeState> | null {
   try {
     const saved = sessionStorage.getItem('homeState');
     return saved ? JSON.parse(saved) : null;
@@ -40,47 +46,49 @@ export default function HomePage(props: HomePageProps) {
   // 加载保存的状态
   const savedState = loadHomeState();
   
-  const [tab, setTab] = createSignal<TabType>(savedState?.tab || "video");
-  const [search, setSearch] = createSignal(savedState?.search || "");
-  const [videoTag, setVideoTag] = createSignal(savedState?.videoTag || "");
-  const [audioTag, setAudioTag] = createSignal(savedState?.audioTag || "");
-  const [videoPage, setVideoPage] = createSignal(savedState?.videoPage || 1);
-  const [audioPage, setAudioPage] = createSignal(savedState?.audioPage || 1);
-  const [isRestoring, setIsRestoring] = createSignal(!!savedState);
+  // 使用 createStore 统一管理状态
+  const [state, setState] = createStore<HomeState>({
+    scrollY: savedState?.scrollY || 0,
+    tab: savedState?.tab || "video",
+    search: savedState?.search || "",
+    videoTag: savedState?.videoTag || "",
+    audioTag: savedState?.audioTag || "",
+    videoPage: savedState?.videoPage || 1,
+    audioPage: savedState?.audioPage || 1,
+    isRestoring: !!savedState,
+  });
 
   // 恢复滚动位置
   onMount(() => {
     if (savedState?.scrollY) {
-      // 等待数据加载和内容渲染后恢复滚动位置
       const restoreScroll = () => {
         const hasContent = (props.videoAlbums()?.length || 0) > 0 || (props.audioAlbums()?.length || 0) > 0;
         if (hasContent) {
           setTimeout(() => {
             window.scrollTo({ top: savedState.scrollY, behavior: 'instant' });
-            setIsRestoring(false);
+            setState('isRestoring', false);
           }, 100);
         } else {
-          // 如果数据还没加载，等待下一帧再试
           requestAnimationFrame(restoreScroll);
         }
       };
       restoreScroll();
     } else {
-      setIsRestoring(false);
+      setState('isRestoring', false);
     }
   });
 
-  // 在离开页面前保存状态（通过监听 visibilitychange 和 beforeunload）
+  // 在离开页面前保存状态
   onMount(() => {
     const saveCurrentState = () => {
       saveHomeState({
         scrollY: window.scrollY,
-        tab: tab(),
-        search: search(),
-        videoTag: videoTag(),
-        audioTag: audioTag(),
-        videoPage: videoPage(),
-        audioPage: audioPage(),
+        tab: state.tab,
+        search: state.search,
+        videoTag: state.videoTag,
+        audioTag: state.audioTag,
+        videoPage: state.videoPage,
+        audioPage: state.audioPage,
       });
     };
 
@@ -96,7 +104,7 @@ export default function HomePage(props: HomePageProps) {
     document.addEventListener('visibilitychange', saveCurrentState);
 
     onCleanup(() => {
-      saveCurrentState(); // 组件卸载时保存
+      saveCurrentState();
       window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('beforeunload', saveCurrentState);
       document.removeEventListener('visibilitychange', saveCurrentState);
@@ -110,19 +118,19 @@ export default function HomePage(props: HomePageProps) {
 
   // 视频专辑过滤
   const { filteredAlbums: filteredVideoAlbums, pagedAlbums: pagedVideoAlbums } = 
-    createAlbumFilter(props.videoAlbums, search, videoTag, videoPage);
+    createAlbumFilter(props.videoAlbums, () => state.search, () => state.videoTag, () => state.videoPage);
   
   // 音频专辑过滤
   const { filteredAlbums: filteredAudioAlbums, pagedAlbums: pagedAudioAlbums } = 
-    createAlbumFilter(props.audioAlbums, search, audioTag, audioPage);
+    createAlbumFilter(props.audioAlbums, () => state.search, () => state.audioTag, () => state.audioPage);
 
   // 无限滚动
   createInfiniteScroll(
-    tab,
-    videoPage,
-    audioPage,
-    setVideoPage,
-    setAudioPage,
+    () => state.tab,
+    () => state.videoPage,
+    () => state.audioPage,
+    (page) => setState('videoPage', page),
+    (page) => setState('audioPage', page),
     () => filteredVideoAlbums().length,
     () => filteredAudioAlbums().length
   );
@@ -146,40 +154,37 @@ export default function HomePage(props: HomePageProps) {
           <p class="text-center text-purple-100 text-base mt-3">发现精彩内容，享受快乐时光 ✨</p>
         </div>
       </div>
-      <div class="container mx-auto px-2 sm:px-4">
+      <div class="max-w-7xl mx-auto px-2 sm:px-4">
         <TabSwitcher
-          activeTab={tab()}
-          onTabChange={(newTab) => {
-            setTab(newTab);
-            // 切换 Tab 时不重置搜索和分页，保持用户状态
-          }}
+          activeTab={state.tab}
+          onTabChange={(newTab) => setState('tab', newTab)}
         />
         
         <div class="py-4 sm:py-6">
           <SearchBar
-            search={search()}
+            search={state.search}
             onSearchChange={(value) => {
-              setSearch(value);
-              setVideoPage(1);
-              setAudioPage(1);
+              setState('search', value);
+              setState('videoPage', 1);
+              setState('audioPage', 1);
             }}
-            selectedTag={tab() === "video" ? videoTag() : audioTag()}
+            selectedTag={state.tab === "video" ? state.videoTag : state.audioTag}
             onTagChange={(value) => {
-              if (tab() === "video") {
-                setVideoTag(value);
+              if (state.tab === "video") {
+                setState('videoTag', value);
               } else {
-                setAudioTag(value);
+                setState('audioTag', value);
               }
-              setVideoPage(1);
-              setAudioPage(1);
+              setState('videoPage', 1);
+              setState('audioPage', 1);
             }}
-            tags={tab() === "video" ? videoTags() : audioTags()}
+            tags={state.tab === "video" ? videoTags() : audioTags()}
           />
         </div>
         
         <div class="pb-6 sm:pb-8 px-2 sm:px-0">
           <Show
-            when={tab() === "video"}
+            when={state.tab === "video"}
             fallback={
               <AlbumList
                 albums={pagedAudioAlbums()}

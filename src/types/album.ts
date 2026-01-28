@@ -1,59 +1,16 @@
 // 专辑相关类型定义
-export interface Episode {
-  id: string | number;
-  title: string;
-  cover?: string;
-  picture_hori?: string;
-  url?: string;
-  fhd?: string;
-  hd?: string;
-  sd?: string;
-  ld?: string;
-  res_identifier?: string;
-}
+// 使用 Zod Schema 生成类型以确保运行时验证
+export * from '@/lib/schemas';
 
-export interface AlbumData {
-  id: number;
-  title: string;
-  description: string;
-  category_tag: string;
-  item_total_number: number;
-  item_now_number: number;
-  picture_hori: string;
-  picture_vert: string;
-  charge_pattern: number;
-  product_id: string;
-  price: number;
-  award_money: number;
-  original_price: number;
-  pintuan_price: number;
-  searchable?: number;
-  extend_extra: {
-    detail_introduction: string;
-  };
-}
+// 兼容旧类型的别名（用于平滑迁移）
+export type { 
+  VideoEpisode as Episode,
+  AlbumData,
+  VideoAlbum,
+  AudioAlbum,
+  TabType
+} from '@/lib/schemas';
 
-export interface VideoAlbumData extends AlbumData {
-  obj_class: string;
-}
-
-export interface AudioAlbumData extends AlbumData {
-  obj_class: "CmsAudioAlbum";
-}
-
-export interface VideoAlbum {
-  node_object_id: string;
-  node_object_data: VideoAlbumData;
-  node_relation_children: Episode[];
-}
-
-export interface AudioAlbum {
-  node_object_id: string;
-  node_object_data: AudioAlbumData;
-  node_relation_children: Episode[];
-}
-
-export type TabType = "video" | "audio";
 
 export interface Resolution {
   label: string;
