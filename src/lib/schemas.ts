@@ -4,23 +4,19 @@ import { z } from 'zod';
  * 专辑数据 Schema - 基础字段
  */
 export const AlbumDataBaseSchema = z.object({
+  id: z.number().int().optional(),
   title: z.string(),
   description: z.string(),
   picture_hori: z.string(),
   item_total_number: z.number().int(),
-  item_now_number: z.number().int(),
   category_tag: z.string().optional(),
-  charge_pattern: z.number().int(),
 });
 
 /**
- * 视频专辑 Episodes Schema - 匹配实际 JSON 结构
+ * 视频专辑 Episodes Schema
  */
 export const VideoEpisodeSchema = z.object({
-  id: z.number().int(),
   title: z.string(),
-  picture_hori: z.string().optional(),
-  res_identifier: z.string(),
   fhd: z.string().optional(),
   hd: z.string().optional(),
   sd: z.string().optional(),
@@ -32,12 +28,7 @@ export const VideoEpisodeSchema = z.object({
  */
 export const VideoAlbumSchema = z.object({
   node_object_id: z.string(),
-  node_object_data: AlbumDataBaseSchema.extend({
-    obj_class: z.string().optional(),
-    id: z.number().int().optional(),
-    picture_vert: z.string().optional(),
-    extend_extra: z.any().optional(),
-  }).passthrough(),
+  node_object_data: AlbumDataBaseSchema,
   node_relation_children: z.array(VideoEpisodeSchema).optional(),
 });
 
@@ -45,7 +36,6 @@ export const VideoAlbumSchema = z.object({
  * 音频专辑 Episodes Schema
  */
 export const AudioEpisodeSchema = z.object({
-  id: z.number().int(),
   title: z.string(),
   res_identifier: z.string(),
 });
@@ -55,12 +45,7 @@ export const AudioEpisodeSchema = z.object({
  */
 export const AudioAlbumSchema = z.object({
   node_object_id: z.string(),
-  node_object_data: AlbumDataBaseSchema.extend({
-    obj_class: z.string().optional(),
-    id: z.number().int().optional(),
-    picture_vert: z.string().optional(),
-    extend_extra: z.any().optional(),
-  }).passthrough(),
+  node_object_data: AlbumDataBaseSchema,
   node_relation_children: z.array(AudioEpisodeSchema).optional(),
 });
 

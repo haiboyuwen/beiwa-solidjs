@@ -58,9 +58,6 @@ export function AlbumCard(props: AlbumCardProps) {
         
         <div class="flex items-center justify-between text-xs text-gray-500">
           <span>共{data.item_total_number}集</span>
-          <span class="text-green-600 font-medium">
-            {data.charge_pattern === 0 ? '免费' : '付费'}
-          </span>
         </div>
       </div>
     </div>
