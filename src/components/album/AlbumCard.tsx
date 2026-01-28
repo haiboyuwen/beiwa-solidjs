@@ -31,7 +31,7 @@ export function AlbumCard(props: AlbumCardProps) {
         
         {/* 集数标签 */}
         <div class="absolute top-3 right-3 bg-gradient-to-r from-gray-900 to-gray-800 bg-opacity-90 backdrop-blur-sm text-white text-xs px-3 py-1.5 rounded-full shadow-lg">
-          {props.album.node_object_data.item_now_number}/{props.album.node_object_data.item_total_number}集
+          {props.album.node_object_data.item_total_number}集
         </div>
         
         {/* 类型标签 */}
